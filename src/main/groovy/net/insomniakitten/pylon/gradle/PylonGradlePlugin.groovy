@@ -12,6 +12,8 @@ import org.gradle.util.GradleVersion
  * @since 0.1.0
  */
 final class PylonGradlePlugin implements Plugin<Project> {
+  private static final VERSION = '@VERSION@'
+
   @Override
   void apply(final Project project) {
     project.extensions.create PylonGradleExtension.NAME, PylonGradleExtension
@@ -30,6 +32,6 @@ final class PylonGradlePlugin implements Plugin<Project> {
   }
 
   private void addPylonDependency(final Project project, final String type) {
-    project.dependencies.add type, "com.github.InsomniaKitten:Pylon:${project.pylon.version}", { transitive = false }
+    project.dependencies.add type, "com.github.InsomniaKitten:Pylon:$VERSION", { transitive = false }
   }
 }
