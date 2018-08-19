@@ -1,5 +1,7 @@
 package net.insomniakitten.pylon.gradle
 
+import net.insomniakitten.pylon.PylonAnnotationProcessor
+
 /**
  * Extension class for the Pylon Gradle plugin, providing configuration properties
  * @author InsomniaKitten
@@ -7,6 +9,11 @@ package net.insomniakitten.pylon.gradle
  */
 class PylonGradleExtension {
   public static final NAME = 'pylon'
+
+  /**
+   * Represents the Pylon annotation processor version
+   */
+  public final version = PylonAnnotationProcessor.VERSION
 
   /**
    * Determines if Pylon should allow empty name elements in the Mod annotation

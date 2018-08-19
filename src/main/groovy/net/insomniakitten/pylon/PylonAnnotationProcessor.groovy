@@ -30,7 +30,7 @@ import javax.tools.StandardLocation
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes('net.insomniakitten.pylon.annotation.*')
 final class PylonAnnotationProcessor extends AbstractProcessor {
-  private static final VERSION = '%VERSION%'
+  public static final VERSION = '%VERSION%'
 
   /**
    * Queries and processes elements annotated by {@link Mod} and {@link Listener} in the environment
