@@ -5,7 +5,7 @@ package net.insomniakitten.pylon.gradle
  * @author InsomniaKitten
  * @since 0.1.0
  */
-final class PylonGradleExtension {
+class PylonGradleExtension {
   public static final NAME = 'pylon'
 
   /**
