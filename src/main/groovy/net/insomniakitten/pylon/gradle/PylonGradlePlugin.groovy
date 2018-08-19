@@ -12,7 +12,7 @@ import org.gradle.util.GradleVersion
  * @since 0.1.0
  */
 final class PylonGradlePlugin implements Plugin<Project> {
-  private static final VERSION = '@VERSION@'
+  public static final VERSION = '0.1.0'
 
   @Override
   void apply(final Project project) {

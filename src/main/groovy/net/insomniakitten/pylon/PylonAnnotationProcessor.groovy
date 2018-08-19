@@ -4,6 +4,7 @@ import groovy.json.JsonBuilder
 import groovy.util.logging.Log4j2
 import net.insomniakitten.pylon.annotation.Listener
 import net.insomniakitten.pylon.annotation.Mod
+import net.insomniakitten.pylon.gradle.PylonGradlePlugin
 import net.insomniakitten.pylon.io.AnnotationParseException
 import net.insomniakitten.pylon.io.JSONWriteException
 
@@ -30,8 +31,6 @@ import javax.tools.StandardLocation
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes('net.insomniakitten.pylon.annotation.*')
 final class PylonAnnotationProcessor extends AbstractProcessor {
-  private static final VERSION = '@VERSION@'
-
   /**
    * Queries and processes elements annotated by {@link Mod} and {@link Listener} in the environment
    * @param annotations All annotations discovered by the processor
@@ -167,6 +166,6 @@ final class PylonAnnotationProcessor extends AbstractProcessor {
    * @since 0.1.0
    */
   private void appendGenerationMarkersFor(final Map target) {
-    target['comment'] = "Generated with Pylon $VERSION"
+    target['comment'] = "Generated with Pylon ${PylonGradlePlugin.VERSION}"
   }
 }

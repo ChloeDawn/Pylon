@@ -22,9 +22,6 @@ minecraft {
   version = '1.13'
   mappings = 'snapshot_20180817'
   tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
-  replaceIn 'PylonAnnotationProcessor'
-  replaceIn 'PylonGradleExtension'
-  replace '@VERSION@', project.version
 }
 
 repositories {
