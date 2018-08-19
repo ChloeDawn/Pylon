@@ -16,10 +16,7 @@ final class PylonGradlePlugin implements Plugin<Project> {
   void apply(final Project project) {
     project.extensions.create PylonGradleExtension.NAME, PylonGradleExtension
     project.plugins.withType(JavaPlugin) {
-      project.afterEvaluate {
-        setupDependencies project
-      }
-      configureTasks project
+      project.afterEvaluate { setupDependencies project }
     }
   }
 
