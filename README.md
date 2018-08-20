@@ -5,14 +5,12 @@ Pylon provides annotations for generating `riftmod.json` metadata dynamically fr
 To use this processor in your environment, append the following to your Gradle build script:
 
 ```groovy
-buildscript {
-  repositories {
-    maven { url = 'https://jitpack.io' }
-  }
-  dependencies {
-    classpath 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT' 
-  }
+repositories {
+  maven { url = 'https://jitpack.io' }
 }
 
-apply plugin: 'net.insomniakitten.pylon-gradle'
+dependencies {
+  implementation 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
+  annotationProcessor 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
+}
 ```
