@@ -1,4 +1,4 @@
-# Pylon
+# Pylon [![](https://jitpack.io/v/InsomniaKitten/Pylon.svg)](https://jitpack.io/#InsomniaKitten/Pylon)
 ##### Annotation processor for auto-generation of Rift mod metadata
 
 Pylon provides annotations for generating `riftmod.json` metadata dynamically from source.
@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
+  compileOnly 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
   annotationProcessor 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
 }
 ```
