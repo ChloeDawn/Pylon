@@ -151,13 +151,13 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      */
     private void appendModToWriter(@Nonnull final Element element, @Nonnull final JsonWriter json) throws IOException {
         if (!(element instanceof TypeElement) && !(element instanceof PackageElement)) {
-            this.logger.error("@Mod applied to non-type/non-package element", element);
+            this.logger.error("@Mod cannot be applied to non-type/non-package element", element);
             return;
         }
 
         if (element instanceof TypeElement && !(element.getEnclosingElement() instanceof PackageElement)) {
             if (!element.getModifiers().contains(Modifier.STATIC)) {
-                this.logger.error("@Mod is not top-level of static", element);
+                this.logger.error("@Mod cannot be applied to non-static type element", element);
                 return;
             }
         }
@@ -175,7 +175,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
         }
 
         if (mod.name().isEmpty()) {
-            this.logger.note("Empty value 'name' in @Mod, substituting '" + mod.id() + "'", element);
+            this.logger.note("Empty value 'name' in @Mod, substituting '" + mod.id() + "'");
         }
 
         json.name(Constants.ID).value(mod.id());
