@@ -24,10 +24,7 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Set;
@@ -72,26 +69,26 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
             throw new IllegalStateException("More than one @Mod annotation discovered in environment");
         }
 
-        try (@Nonnull final OutputStream stream = this.createOutputFile().openOutputStream()) {
-            try (@Nonnull final JsonWriter writer = this.createJsonWriter(stream)) {
-                writer.beginObject();
+        try (@Nonnull final Writer writer = this.createOutputFile().openWriter()) {
+            try (@Nonnull final JsonWriter json = this.createJsonWriter(writer)) {
+                json.beginObject();
 
-                writer.name(Constants.COMMENT).value(Constants.GENERATED + PylonAnnotationProcessor.VERSION);
+                json.name(Constants.COMMENT).value(Constants.GENERATED + PylonAnnotationProcessor.VERSION);
 
-                this.appendModToWriter(Iterables.getOnlyElement(mods), writer);
+                this.appendModToWriter(Iterables.getOnlyElement(mods), json);
 
                 if (!listeners.isEmpty()) {
-                    writer.name("listeners");
-                    writer.beginArray();
+                    json.name("listeners");
+                    json.beginArray();
 
                     for (@Nonnull final Element element : listeners) {
-                        this.appendListenerToWriter(element, writer);
+                        this.appendListenerToWriter(element, json);
                     }
 
-                    writer.endArray();
+                    json.endArray();
                 }
 
-                writer.endObject();
+                json.endObject();
             }
         } catch (@Nonnull final IOException e) {
             throw new JsonWriteException("Failed to write information to " + Constants.FILE, e);
@@ -101,13 +98,13 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
     }
 
     /**
-     * Creates a new {@link JsonWriter} for the given {@link OutputStream}
-     * @param stream The stream to be written to by the Json writer
+     * Creates a new {@link JsonWriter} for the given {@link Writer}
+     * @param writer The file writer to be encapsulated
      * @return A preconfigured Json writer instance
      * @since 0.1.0
      */
-    private JsonWriter createJsonWriter(final OutputStream stream) {
-        final Writer writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
+    @Nonnull
+    private JsonWriter createJsonWriter(final Writer writer) {
         final JsonWriter jsonWriter = new JsonWriter(writer);
         jsonWriter.setIndent("    ");
         jsonWriter.setHtmlSafe(true);
@@ -130,10 +127,10 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
     /**
      * Appends the information from the {@link Mod} annotated {@link Element} to the open {@link JsonWriter}
      * @param element The annotated element
-     * @param writer The writer to be appended to
+     * @param json The Json writer to be appended to
      * @throws IOException If the writer fails to append
      */
-    private void appendModToWriter(final Element element, final JsonWriter writer) throws IOException {
+    private void appendModToWriter(final Element element, final JsonWriter json) throws IOException {
         if (!(element instanceof TypeElement) && !(element instanceof PackageElement)) {
             final String kind = element.getKind().name().toLowerCase(Locale.ROOT);
             throw new IllegalAnnotationException("@Mod applied to non-type/non-package element '" + kind + "'");
@@ -153,43 +150,43 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
             throw new AnnotationParseException("Empty value 'id' in @Mod");
         }
 
-        writer.name(Constants.ID).value(mod.id());
+        json.name(Constants.ID).value(mod.id());
 
         if (mod.name().isEmpty()) {
             this.logger.note("Empty value 'name' in @Mod, substituting '" + mod.id() + "'");
-            writer.name(Constants.NAME).value(mod.id());
+            json.name(Constants.NAME).value(mod.id());
         } else {
-            writer.name(Constants.NAME).value(mod.name());
+            json.name(Constants.NAME).value(mod.name());
         }
 
         if (mod.version().isEmpty()) {
             throw new AnnotationParseException("Empty value 'version' in @Mod");
         }
 
-        writer.name(Constants.VERSION).value(mod.version());
+        json.name(Constants.VERSION).value(mod.version());
 
         if (mod.authors().length > 0) {
-            writer.name(Constants.AUTHORS);
-            writer.beginArray();
+            json.name(Constants.AUTHORS);
+            json.beginArray();
 
             for (final String author : mod.authors()) {
                 if (author.isEmpty()) {
                     throw new AnnotationParseException("Empty element in value 'authors' in @Mod");
                 }
-                writer.value(author);
+                json.value(author);
             }
 
-            writer.endArray();
+            json.endArray();
         }
     }
 
     /**
      * Appends the information from the {@link Listener} annotated {@link Element} to the open {@link JsonWriter}
      * @param element The annotated element
-     * @param writer The writer to be appended to
+     * @param json The Json writer to be appended to
      * @throws IOException If the writer fails to append
      */
-    private void appendListenerToWriter(final Element element, final JsonWriter writer) throws IOException {
+    private void appendListenerToWriter(final Element element, final JsonWriter json) throws IOException {
         if (!(element instanceof TypeElement)) {
             @Nonnull final String kind = element.getKind().name().toLowerCase(Locale.ROOT);
             throw new IllegalAnnotationException("@Listener applied to non-type element '" + kind + "'");
@@ -210,13 +207,13 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
 
         @Nonnull final Listener listener = element.getAnnotation(Listener.class);
 
-        writer.beginObject();
+        json.beginObject();
 
-        writer.name(Constants.CLASS).value(className);
-        writer.name(Constants.PRIORITY).value(listener.priority());
-        writer.name(Constants.SIDE).value(listener.side().getName());
+        json.name(Constants.CLASS).value(className);
+        json.name(Constants.PRIORITY).value(listener.priority());
+        json.name(Constants.SIDE).value(listener.side().getName());
 
-        writer.endObject();
+        json.endObject();
     }
 
     /**
