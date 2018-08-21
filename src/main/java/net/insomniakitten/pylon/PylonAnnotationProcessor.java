@@ -45,7 +45,7 @@ import java.util.Set;
 public final class PylonAnnotationProcessor extends AbstractProcessor {
     public static final String VERSION = "%VERSION%";
 
-    private final LoggingProxy logger = new LoggingProxy(this.processingEnv.getMessager());
+    private final LoggingProxy logger = new LoggingProxy();
 
     /**
      * Queries and processes elements annotated by {@link Mod} and {@link Listener} in the environment
@@ -241,29 +241,26 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
     }
 
     /**
-     * Static utility class used to proxy {@link CharSequence} messages
+     * Utility class used to proxy {@link CharSequence} messages
      * to the processing environment's {@link Messager} implementation
      * @author InsomniaKitten
      * @since 0.1.0
      */
     @SuppressWarnings("SameParameterValue")
-    private static final class LoggingProxy {
-        private final Messager messager;
-
-        private LoggingProxy(final Messager messager) {
-            this.messager = messager;
-        }
-
+    private final class LoggingProxy {
         private void note(final CharSequence msg) {
-            this.messager.printMessage(Diagnostic.Kind.NOTE, msg);
+            PylonAnnotationProcessor.this.processingEnv.getMessager()
+                .printMessage(Diagnostic.Kind.NOTE, msg);
         }
 
         private void warn(final CharSequence msg) {
-            this.messager.printMessage(Diagnostic.Kind.WARNING, msg);
+            PylonAnnotationProcessor.this.processingEnv.getMessager()
+                .printMessage(Diagnostic.Kind.WARNING, msg);
         }
 
         private void error(final CharSequence msg) {
-            this.messager.printMessage(Diagnostic.Kind.ERROR, msg);
+            PylonAnnotationProcessor.this.processingEnv.getMessager()
+                .printMessage(Diagnostic.Kind.ERROR, msg);
         }
     }
 }
