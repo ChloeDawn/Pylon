@@ -236,7 +236,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
 
         private static final String INDENT = "  ";
 
-        private static final String COMMENT = "comment";
+        private static final String COMMENT = "__comment";
         private static final String GENERATED = "Generated with Pylon ";
 
         private static final String ID = "id";
