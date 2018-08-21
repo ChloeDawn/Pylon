@@ -4,13 +4,12 @@ import com.google.common.collect.Iterables;
 import com.google.gson.stream.JsonWriter;
 import net.insomniakitten.pylon.annotation.Listener;
 import net.insomniakitten.pylon.annotation.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -21,6 +20,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
@@ -45,7 +45,7 @@ import java.util.Set;
 public final class PylonAnnotationProcessor extends AbstractProcessor {
     public static final String VERSION = "%VERSION%";
 
-    private static final Logger LOGGER = LogManager.getLogger("pylon.processor");
+    private final LoggingProxy logger = new LoggingProxy(this.processingEnv.getMessager());
 
     /**
      * Queries and processes elements annotated by {@link Mod} and {@link Listener} in the environment
@@ -60,7 +60,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
         @Nonnull final Collection<? extends Element> listeners = env.getElementsAnnotatedWith(Listener.class);
 
         if (mods.isEmpty() && listeners.isEmpty()) {
-            PylonAnnotationProcessor.LOGGER.debug("No annotations discovered, returning...");
+            this.logger.error("No annotations discovered, exiting...");
             return false;
         }
 
@@ -156,7 +156,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
         writer.name(Constants.ID).value(mod.id());
 
         if (mod.name().isEmpty()) {
-            PylonAnnotationProcessor.LOGGER.debug("Empty value 'name' in @Mod, substituting {}", mod.id());
+            this.logger.note("Empty value 'name' in @Mod, substituting '" + mod.id() + "'");
             writer.name(Constants.NAME).value(mod.id());
         } else {
             writer.name(Constants.NAME).value(mod.name());
@@ -205,7 +205,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
         }
 
         if (type.getInterfaces().isEmpty()) {
-            PylonAnnotationProcessor.LOGGER.warn("@Listener '{}' does not implement any interfaces", className);
+            this.logger.warn("@Listener '" + className + "' does not implement any interfaces");
         }
 
         @Nonnull final Listener listener = element.getAnnotation(Listener.class);
@@ -238,5 +238,32 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
         private static final String CLASS = "class";
         private static final String PRIORITY = "side";
         private static final String SIDE = "side";
+    }
+
+    /**
+     * Static utility class used to proxy {@link CharSequence} messages
+     * to the processing environment's {@link Messager} implementation
+     * @author InsomniaKitten
+     * @since 0.1.0
+     */
+    @SuppressWarnings("SameParameterValue")
+    private static final class LoggingProxy {
+        private final Messager messager;
+
+        private LoggingProxy(final Messager messager) {
+            this.messager = messager;
+        }
+
+        private void note(final CharSequence msg) {
+            this.messager.printMessage(Diagnostic.Kind.NOTE, msg);
+        }
+
+        private void warn(final CharSequence msg) {
+            this.messager.printMessage(Diagnostic.Kind.WARNING, msg);
+        }
+
+        private void error(final CharSequence msg) {
+            this.messager.printMessage(Diagnostic.Kind.ERROR, msg);
+        }
     }
 }
