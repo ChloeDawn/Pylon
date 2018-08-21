@@ -21,6 +21,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
@@ -127,7 +128,16 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      */
     @Nonnull
     private JsonWriter createJsonWriter(@Nonnull final Writer delegate) {
-        @Nonnull final JsonWriter writer = new JsonWriter(delegate);
+        @Nonnull final BufferedWriter bufferedWriter;
+
+        if (delegate instanceof BufferedWriter) {
+            bufferedWriter = (BufferedWriter) delegate;
+        } else {
+            bufferedWriter = new BufferedWriter(delegate);
+        }
+
+        @Nonnull final JsonWriter writer = new JsonWriter(bufferedWriter);
+
         writer.setIndent(Constants.INDENT);
         writer.setHtmlSafe(true);
         return writer;
