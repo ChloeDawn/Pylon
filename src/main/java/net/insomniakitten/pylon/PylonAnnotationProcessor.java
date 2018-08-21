@@ -6,7 +6,6 @@ import net.insomniakitten.pylon.annotation.Listener;
 import net.insomniakitten.pylon.annotation.Mod;
 
 import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -18,7 +17,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -26,7 +24,6 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -36,13 +33,12 @@ import java.util.Set;
  * @author InsomniaKitten
  * @since 0.1.0
  */
-@ParametersAreNonnullByDefault
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("net.insomniakitten.pylon.annotation.*")
 public final class PylonAnnotationProcessor extends AbstractProcessor {
     public static final String VERSION = "%VERSION%";
 
-    private final LoggingProxy logger = new LoggingProxy();
+    private final LoggerImpl logger = new LoggerImpl();
 
     /**
      * Queries and processes elements annotated by {@link Mod} and {@link Listener} in the environment
@@ -52,21 +48,25 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      * @since 0.1.0
      */
     @Override
-    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment env) {
+    public boolean process(@Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env) {
+        this.logger.note("Pylon Annotation Processor " + PylonAnnotationProcessor.VERSION);
+
         @Nonnull final Collection<? extends Element> mods = env.getElementsAnnotatedWith(Mod.class);
         @Nonnull final Collection<? extends Element> listeners = env.getElementsAnnotatedWith(Listener.class);
 
         if (mods.isEmpty() && listeners.isEmpty()) {
-            this.logger.error("No annotations discovered, exiting...");
+            this.logger.warn("No annotations discovered in environment");
             return false;
         }
 
         if (mods.isEmpty()) {
-            throw new IllegalStateException("No @Mod annotation discovered in environment");
+            this.logger.error("No @Mod annotation discovered in environment");
+            return false;
         }
 
         if (mods.size() > 1) {
-            throw new IllegalStateException("More than one @Mod annotation discovered in environment");
+            this.logger.error("More than one @Mod annotation discovered in environment");
+            return false;
         }
 
         try (@Nonnull final Writer writer = this.createOutputFile().openWriter()) {
@@ -77,7 +77,9 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
 
                 this.appendModToWriter(Iterables.getOnlyElement(mods), json);
 
-                if (!listeners.isEmpty()) {
+                if (listeners.isEmpty()) {
+                    this.logger.note("No @Listener annotations discovered");
+                } else {
                     json.name("listeners");
                     json.beginArray();
 
@@ -91,24 +93,10 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
                 json.endObject();
             }
         } catch (@Nonnull final IOException e) {
-            throw new JsonWriteException("Failed to write information to " + Constants.FILE, e);
+            throw new RuntimeException("Failed to write information to " + Constants.FILE, e);
         }
 
         return true;
-    }
-
-    /**
-     * Creates a new {@link JsonWriter} for the given {@link Writer}
-     * @param writer The file writer to be encapsulated
-     * @return A preconfigured Json writer instance
-     * @since 0.1.0
-     */
-    @Nonnull
-    private JsonWriter createJsonWriter(final Writer writer) {
-        final JsonWriter jsonWriter = new JsonWriter(writer);
-        jsonWriter.setIndent("    ");
-        jsonWriter.setHtmlSafe(true);
-        return jsonWriter;
     }
 
     /**
@@ -125,53 +113,67 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
     }
 
     /**
+     * Creates a new {@link JsonWriter} for the given {@link Writer}
+     * @param delegate The writer to be delegated to
+     * @return A preconfigured Json writer instance
+     * @since 0.1.0
+     */
+    @Nonnull
+    private JsonWriter createJsonWriter(@Nonnull final Writer delegate) {
+        @Nonnull final JsonWriter writer = new JsonWriter(delegate);
+        writer.setIndent(Constants.INDENT);
+        writer.setHtmlSafe(true);
+        return writer;
+    }
+
+    /**
      * Appends the information from the {@link Mod} annotated {@link Element} to the open {@link JsonWriter}
      * @param element The annotated element
      * @param json The Json writer to be appended to
      * @throws IOException If the writer fails to append
      */
-    private void appendModToWriter(final Element element, final JsonWriter json) throws IOException {
+    private void appendModToWriter(@Nonnull final Element element, @Nonnull final JsonWriter json) throws IOException {
         if (!(element instanceof TypeElement) && !(element instanceof PackageElement)) {
-            final String kind = element.getKind().name().toLowerCase(Locale.ROOT);
-            throw new IllegalAnnotationException("@Mod applied to non-type/non-package element '" + kind + "'");
+            this.logger.error("@Mod applied to non-type/non-package element", element);
+            return;
         }
-
-        @Nonnull final String className = ((QualifiedNameable) element).getQualifiedName().toString();
 
         if (element instanceof TypeElement && !(element.getEnclosingElement() instanceof PackageElement)) {
             if (!element.getModifiers().contains(Modifier.STATIC)) {
-                throw new IllegalAnnotationException("@Listener '" + className + "' is not top-level or static");
+                this.logger.error("@Mod is not top-level of static", element);
+                return;
             }
         }
 
         @Nonnull final Mod mod = element.getAnnotation(Mod.class);
 
         if (mod.id().isEmpty()) {
-            throw new AnnotationParseException("Empty value 'id' in @Mod");
-        }
-
-        json.name(Constants.ID).value(mod.id());
-
-        if (mod.name().isEmpty()) {
-            this.logger.note("Empty value 'name' in @Mod, substituting '" + mod.id() + "'");
-            json.name(Constants.NAME).value(mod.id());
-        } else {
-            json.name(Constants.NAME).value(mod.name());
+            this.logger.error("Empty value 'id' in @Mod", element);
+            return;
         }
 
         if (mod.version().isEmpty()) {
-            throw new AnnotationParseException("Empty value 'version' in @Mod");
+            this.logger.error("Empty value 'version' in @Mod", element);
+            return;
         }
 
+        if (mod.name().isEmpty()) {
+            this.logger.note("Empty value 'name' in @Mod, substituting '" + mod.id() + "'", element);
+        }
+
+        json.name(Constants.ID).value(mod.id());
+        json.name(Constants.NAME).value(mod.name().isEmpty() ? mod.id() : mod.name());
         json.name(Constants.VERSION).value(mod.version());
+        json.name(Constants.SIDE).value(mod.side().getName());
 
         if (mod.authors().length > 0) {
             json.name(Constants.AUTHORS);
             json.beginArray();
 
-            for (final String author : mod.authors()) {
+            for (@Nonnull final String author : mod.authors()) {
                 if (author.isEmpty()) {
-                    throw new AnnotationParseException("Empty element in value 'authors' in @Mod");
+                    this.logger.error("Empty element in value 'authors' in @Mod", element);
+                    continue;
                 }
                 json.value(author);
             }
@@ -186,43 +188,46 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      * @param json The Json writer to be appended to
      * @throws IOException If the writer fails to append
      */
-    private void appendListenerToWriter(final Element element, final JsonWriter json) throws IOException {
+    private void appendListenerToWriter(@Nonnull final Element element, @Nonnull final JsonWriter json) throws IOException {
         if (!(element instanceof TypeElement)) {
-            @Nonnull final String kind = element.getKind().name().toLowerCase(Locale.ROOT);
-            throw new IllegalAnnotationException("@Listener applied to non-type element '" + kind + "'");
+            this.logger.error("@Listener applied to non-type element", element);
+            return;
         }
-
-        @Nonnull final TypeElement type = (TypeElement) element;
-        @Nonnull final String className = type.getQualifiedName().toString();
 
         if (!(element.getEnclosingElement() instanceof PackageElement)) {
             if (!element.getModifiers().contains(Modifier.STATIC)) {
-                throw new IllegalAnnotationException("@Listener '" + className + "' is not top-level or static");
+                this.logger.error("@Listener is not top-level or static", element);
+                return;
             }
         }
 
+        @Nonnull final TypeElement type = (TypeElement) element;
+
         if (type.getInterfaces().isEmpty()) {
-            this.logger.warn("@Listener '" + className + "' does not implement any interfaces");
+            this.logger.warn("@Listener does not implement any interfaces", element);
         }
 
         @Nonnull final Listener listener = element.getAnnotation(Listener.class);
 
         json.beginObject();
 
-        json.name(Constants.CLASS).value(className);
+        json.name(Constants.CLASS).value(type.getQualifiedName().toString());
         json.name(Constants.PRIORITY).value(listener.priority());
         json.name(Constants.SIDE).value(listener.side().getName());
 
         json.endObject();
+
     }
 
     /**
-     * Static references to the target file name and all JSON keys used during processing
+     * Static references to the String constants used during processing
      * @author InsomniaKitten
      * @since 0.1.0
      */
     private static final class Constants {
         private static final String FILE = "riftmod.json";
+
+        private static final String INDENT = "  ";
 
         private static final String COMMENT = "comment";
         private static final String GENERATED = "Generated with Pylon ";
@@ -244,20 +249,34 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      * @since 0.1.0
      */
     @SuppressWarnings("SameParameterValue")
-    private final class LoggingProxy {
-        private void note(final CharSequence msg) {
-            PylonAnnotationProcessor.this.processingEnv.getMessager()
-                .printMessage(Diagnostic.Kind.NOTE, msg);
+    private final class LoggerImpl {
+        private void note(@Nonnull final CharSequence message) {
+            this.messager().printMessage(Diagnostic.Kind.NOTE, message);
         }
 
-        private void warn(final CharSequence msg) {
-            PylonAnnotationProcessor.this.processingEnv.getMessager()
-                .printMessage(Diagnostic.Kind.WARNING, msg);
+        private void warn(@Nonnull final CharSequence message) {
+            this.messager().printMessage(Diagnostic.Kind.WARNING, message);
         }
 
-        private void error(final CharSequence msg) {
-            PylonAnnotationProcessor.this.processingEnv.getMessager()
-                .printMessage(Diagnostic.Kind.ERROR, msg);
+        private void error(@Nonnull final CharSequence message) {
+            this.messager().printMessage(Diagnostic.Kind.ERROR, message);
+        }
+
+        private void note(@Nonnull final CharSequence message, @Nonnull final Element element) {
+            this.messager().printMessage(Diagnostic.Kind.NOTE, message, element);
+        }
+
+        private void warn(@Nonnull final CharSequence message, @Nonnull final Element element) {
+            this.messager().printMessage(Diagnostic.Kind.WARNING, message, element);
+        }
+
+        private void error(@Nonnull final CharSequence message, @Nonnull final Element element) {
+            this.messager().printMessage(Diagnostic.Kind.ERROR, message, element);
+        }
+
+        @Nonnull
+        private Messager messager() {
+            return PylonAnnotationProcessor.this.processingEnv.getMessager();
         }
     }
 }
