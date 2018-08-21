@@ -36,9 +36,11 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("net.insomniakitten.pylon.annotation.*")
 public final class PylonAnnotationProcessor extends AbstractProcessor {
-    public static final String VERSION = "%VERSION%";
+    public static final String VERSION = "0.1.0";
 
     private final LoggerImpl logger = new LoggerImpl();
+
+    private boolean firstRun = true;
 
     /**
      * Queries and processes elements annotated by {@link Mod} and {@link Listener} in the environment
@@ -49,7 +51,12 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      */
     @Override
     public boolean process(@Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env) {
-        this.logger.note("Pylon Annotation Processor " + PylonAnnotationProcessor.VERSION);
+        if (this.firstRun) {
+            this.logger.note("Pylon Annotation Processor " + PylonAnnotationProcessor.VERSION);
+            this.firstRun = false;
+        } else {
+            return false;
+        }
 
         @Nonnull final Collection<? extends Element> mods = env.getElementsAnnotatedWith(Mod.class);
         @Nonnull final Collection<? extends Element> listeners = env.getElementsAnnotatedWith(Listener.class);
@@ -238,7 +245,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
         private static final String AUTHORS = "authors";
 
         private static final String CLASS = "class";
-        private static final String PRIORITY = "side";
+        private static final String PRIORITY = "priority";
         private static final String SIDE = "side";
     }
 
