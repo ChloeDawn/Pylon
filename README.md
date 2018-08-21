@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
+  implementation 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT:api'
   annotationProcessor 'com.github.InsomniaKitten:Pylon:master-SNAPSHOT'
 }
 ```

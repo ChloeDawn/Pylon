@@ -9,8 +9,6 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-apply plugin: 'java-gradle-plugin'
-apply plugin: 'groovy'
 apply plugin: 'java'
 
 archivesBaseName = 'Pylon'
@@ -24,10 +22,37 @@ minecraft {
   tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
 }
 
+jar {
+  from sourceSets.main.output
+  from sourceSets.api.output
+}
+
 repositories {
   maven { url = 'https://www.dimdev.org/maven' }
 }
 
 dependencies {
   implementation 'org.dimdev:rift:1.0.4-51:dev'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allJava
+  from sourceSets.api.allJava
+}
+
+task apiJar(type: Jar) {
+  classifier = 'api'
+  from sourceSets.api.output
+}
+
+artifacts {
+  archives javadocJar
+  archives sourcesJar
+  archives apiJar
 }
