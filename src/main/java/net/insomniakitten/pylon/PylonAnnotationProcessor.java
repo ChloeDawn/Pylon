@@ -37,7 +37,7 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("net.insomniakitten.pylon.annotation.*")
 public final class PylonAnnotationProcessor extends AbstractProcessor {
-    public static final String VERSION = "0.1.0";
+    public static final String VERSION = "0.2.0";
 
     private final LoggerImpl logger = new LoggerImpl();
 
