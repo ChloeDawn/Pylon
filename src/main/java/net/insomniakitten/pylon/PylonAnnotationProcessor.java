@@ -242,7 +242,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
      * @since 0.1.0
      */
     private static final class Constants {
-        private static final String RESOURCES = "resources/";
+        private static final String RESOURCES = "resources";
         private static final String FILE = "riftmod.json";
 
         private static final String INDENT = "  ";
