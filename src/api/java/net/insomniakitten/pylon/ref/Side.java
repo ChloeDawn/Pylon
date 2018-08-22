@@ -1,7 +1,7 @@
 package net.insomniakitten.pylon.ref;
 
-import net.insomniakitten.pylon.annotation.Listener;
-import net.insomniakitten.pylon.annotation.Mod;
+import net.insomniakitten.pylon.annotation.rift.Listener;
+import net.insomniakitten.pylon.annotation.rift.Mod;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;

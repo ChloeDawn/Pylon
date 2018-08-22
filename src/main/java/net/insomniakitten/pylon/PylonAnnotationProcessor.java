@@ -2,8 +2,8 @@ package net.insomniakitten.pylon;
 
 import com.google.common.collect.Iterables;
 import com.google.gson.stream.JsonWriter;
-import net.insomniakitten.pylon.annotation.Listener;
-import net.insomniakitten.pylon.annotation.Mod;
+import net.insomniakitten.pylon.annotation.rift.Listener;
+import net.insomniakitten.pylon.annotation.rift.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.processing.AbstractProcessor;
@@ -37,7 +37,7 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("net.insomniakitten.pylon.annotation.*")
 public final class PylonAnnotationProcessor extends AbstractProcessor {
-    public static final String VERSION = "0.1.0";
+    public static final String VERSION = "0.2.0";
 
     private final LoggerImpl logger = new LoggerImpl();
 

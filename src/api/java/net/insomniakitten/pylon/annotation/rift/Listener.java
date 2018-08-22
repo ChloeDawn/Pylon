@@ -1,4 +1,4 @@
-package net.insomniakitten.pylon.annotation;
+package net.insomniakitten.pylon.annotation.rift;
 
 import net.insomniakitten.pylon.ref.Side;
 
