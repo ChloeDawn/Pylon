@@ -93,7 +93,7 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
                     json.beginArray();
 
                     // FIXME Remove once Rift implements listener priority at runtime
-                    @Nonnull final ImmutableSortedSet<Element> sortedListeners =
+                    @Nonnull final Iterable<Element> sortedListeners =
                         ImmutableSortedSet.orderedBy(
                             (@Nonnull final Element e1, @Nonnull final Element e2) -> {
                                 @Nonnull final Listener l1 = e1.getAnnotation(Listener.class);
