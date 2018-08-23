@@ -1,5 +1,6 @@
 package net.insomniakitten.pylon;
 
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
 import com.google.gson.stream.JsonWriter;
 import net.insomniakitten.pylon.annotation.rift.Listener;
@@ -37,7 +38,7 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("net.insomniakitten.pylon.annotation.*")
 public final class PylonAnnotationProcessor extends AbstractProcessor {
-    public static final String VERSION = "0.2.0";
+    public static final String VERSION = "0.2.1";
 
     private final LoggerImpl logger = new LoggerImpl();
 
@@ -91,7 +92,17 @@ public final class PylonAnnotationProcessor extends AbstractProcessor {
                     json.name("listeners");
                     json.beginArray();
 
-                    for (@Nonnull final Element element : listeners) {
+                    // FIXME Remove once Rift implements listener priority at runtime
+                    @Nonnull final ImmutableSortedSet<Element> sortedListeners =
+                        ImmutableSortedSet.orderedBy(
+                            (@Nonnull final Element e1, @Nonnull final Element e2) -> {
+                                @Nonnull final Listener l1 = e1.getAnnotation(Listener.class);
+                                @Nonnull final Listener l2 = e2.getAnnotation(Listener.class);
+                                return l1.priority() - l2.priority();
+                            }
+                        ).addAll(listeners).build();
+
+                    for (@Nonnull final Element element : sortedListeners) {
                         this.appendListenerToWriter(element, json);
                     }
 
