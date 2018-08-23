@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 public abstract class PylonAnnotationProcessor implements Processor {
     private final Set<String> supportedAnnotationTypes;
     private ProcessingEnvironment environment;
-    private final PylonLogger logger = LoggerFactory.newSimpleLogger(this.getProcessorName(), this.getEnvironment()::getMessager);
+    private final PylonLogger logger = LoggerFactory.newSimpleLogger(this.getProcessorName(), () -> this.getEnvironment().getMessager());
 
     private boolean initialized;
 
