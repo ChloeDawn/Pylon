@@ -13,7 +13,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.util.Comparator;
@@ -158,12 +157,14 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
     }
 
     private void appendListenerToWriter(@Nonnull final Entry<Element, Listener> entry, @Nonnull final JsonWriter writer) throws IOException {
-        @Nonnull val nameable = (QualifiedNameable) entry.getKey();
+        @Nonnull val element = (TypeElement) entry.getKey();
         @Nonnull val listener = entry.getValue();
 
         writer.beginObject();
 
-        writer.name(Constants.CLASS).value(nameable.getQualifiedName().toString());
+        @Nonnull val name = this.getEnvironment().getElementUtils().getBinaryName(element);
+
+        writer.name(Constants.CLASS).value(name.toString());
         writer.name(Constants.SIDE).value(listener.side().getName());
         writer.name(Constants.PRIORITY).value(listener.priority());
 
