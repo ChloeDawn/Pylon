@@ -50,28 +50,32 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
             return false;
         }
 
-        this.openJsonWriter(Constants.FILE, json -> {
-            json.beginObject();
+        try {
+            this.openJsonWriter(Constants.FILE, json -> {
+                json.beginObject();
 
-            json.name(Constants.COMMENT).value(Constants.GENERATED + Pylon.VERSION);
+                json.name(Constants.COMMENT).value(Constants.GENERATED + Pylon.VERSION);
 
-            this.appendModToWriter(Iterables.getOnlyElement(modElements.entrySet()), json);
+                this.appendModToWriter(Iterables.getOnlyElement(modElements.entrySet()), json);
 
-            if (listenerElements.isEmpty()) {
-                this.getLogger().note("No @Listener annotations discovered in environment");
-            } else {
-                json.name(Constants.LISTENERS);
-                json.beginArray();
+                if (listenerElements.isEmpty()) {
+                    this.getLogger().note("No @Listener annotations discovered in environment");
+                } else {
+                    json.name(Constants.LISTENERS);
+                    json.beginArray();
 
-                for (@Nonnull val entry : listenerElements.entrySet()) {
-                    this.appendListenerToWriter(entry, json);
+                    for (@Nonnull val entry : listenerElements.entrySet()) {
+                        this.appendListenerToWriter(entry, json);
+                    }
+
+                    json.endArray();
                 }
 
-                json.endArray();
-            }
-
-            json.endObject();
-        });
+                json.endObject();
+            });
+        } catch (@Nonnull final IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return true;
     }

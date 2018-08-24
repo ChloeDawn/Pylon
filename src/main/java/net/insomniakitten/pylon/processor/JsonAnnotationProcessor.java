@@ -12,13 +12,16 @@ import java.io.IOException;
 import java.io.Writer;
 
 public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
-    protected final void openJsonWriter(@Nonnull final String file, @Nonnull final IOConsumer<JsonWriter> consumer) {
-        try (@Nonnull val fileWriter = this.createFileAtRoot(file).openWriter()) {
-            try (@Nonnull val jsonWriter = this.createJsonWriter(fileWriter)) {
-                consumer.accept(jsonWriter);
-            }
-        } catch (@Nonnull final IOException e) {
-            throw new RuntimeException(e);
+    /**
+     * Opens an {@link JsonWriter} and feeds to the given {@link IOConsumer}
+     * @param file The name of the file to write to
+     * @param consumer The consumer to accept the writer
+     * @throws IOException If the file cannot be written to
+     * @since 0.3.0
+     */
+    protected final void openJsonWriter(@Nonnull final String file, @Nonnull final IOConsumer<JsonWriter> consumer) throws IOException {
+        try (@Nonnull val jsonWriter = this.createJsonWriter(this.createFileAtRoot(file).openWriter())) {
+            consumer.accept(jsonWriter);
         }
     }
 
