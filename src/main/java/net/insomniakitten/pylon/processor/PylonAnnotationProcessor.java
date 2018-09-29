@@ -37,16 +37,16 @@ public abstract class PylonAnnotationProcessor implements Processor {
     private boolean initialized;
 
     {
-        @Nonnull val builder = new ImmutableSet.Builder<String>();
+        val builder = new ImmutableSet.Builder<String>();
         this.getSupportedAnnotations(builder);
         this.supportedAnnotationTypes = builder.build();
     }
 
     protected abstract String getProcessorName();
 
-    protected abstract void getSupportedAnnotations(@Nonnull final ImmutableSet.Builder<String> builder);
+    protected abstract void getSupportedAnnotations(final ImmutableSet.Builder<String> builder);
 
-    protected abstract boolean onProcessAnnotations(@Nonnull final RoundEnvironment environment);
+    protected abstract boolean onProcessAnnotations(final RoundEnvironment environment);
 
     @Override
     public Set<String> getSupportedOptions() {
@@ -59,7 +59,7 @@ public abstract class PylonAnnotationProcessor implements Processor {
     }
 
     @Override
-    public void init(@Nonnull final ProcessingEnvironment environment) {
+    public void init(final ProcessingEnvironment environment) {
         if (this.isInitialized()) {
             throw new IllegalStateException("Already initialized");
         }
@@ -68,23 +68,23 @@ public abstract class PylonAnnotationProcessor implements Processor {
     }
 
     @Override
-    public final boolean process(@Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment environment) {
+    public final boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment environment) {
         return this.onProcessAnnotations(environment);
     }
 
     @Override
-    public Iterable<? extends Completion> getCompletions(@Nonnull final Element element, @Nonnull final AnnotationMirror annotation, @Nonnull final ExecutableElement member, @Nonnull final String userText) {
+    public Iterable<? extends Completion> getCompletions(final Element element, final AnnotationMirror annotation, final ExecutableElement member, final String userText) {
         return Collections.emptySet();
     }
 
     @Nonnull
-    protected final <T extends Annotation> Map<Element, T> collectAnnotationsFor(@Nonnull final RoundEnvironment environment, @Nonnull final Class<T> type, @Nonnull final Predicate<Element> filter) {
+    protected final <T extends Annotation> Map<Element, T> collectAnnotationsFor(final RoundEnvironment environment, final Class<T> type, final Predicate<Element> filter) {
         return environment.getElementsAnnotatedWith(type).stream().filter(filter)
             .collect(ImmutableMap.toImmutableMap(Function.identity(), it -> it.getAnnotation(type)));
     }
 
     @Nonnull
-    protected final <T extends Annotation> Map<Element, T> collectAnnotationsFor(@Nonnull final RoundEnvironment environment, @Nonnull final Class<T> type, @Nonnull final Predicate<Element> filter, @Nonnull final Comparator<Element> sorter) {
+    protected final <T extends Annotation> Map<Element, T> collectAnnotationsFor(final RoundEnvironment environment, final Class<T> type, final Predicate<Element> filter, final Comparator<Element> sorter) {
         return environment.getElementsAnnotatedWith(type).stream().filter(filter).sorted(sorter)
             .collect(ImmutableMap.toImmutableMap(Function.identity(), it -> it.getAnnotation(type)));
     }

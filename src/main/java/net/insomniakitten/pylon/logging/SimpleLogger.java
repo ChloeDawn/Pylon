@@ -33,47 +33,47 @@ final class SimpleLogger implements PylonLogger {
     }
 
     @Override
-    public void note(@Nullable final CharSequence message, @Nonnull final Element element) {
+    public void note(@Nullable final CharSequence message, final Element element) {
         this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element);
     }
 
     @Override
-    public void warn(@Nullable final CharSequence message, @Nonnull final Element element) {
+    public void warn(@Nullable final CharSequence message, final Element element) {
         this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element);
     }
 
     @Override
-    public void error(@Nullable final CharSequence message, @Nonnull final Element element) {
+    public void error(@Nullable final CharSequence message, final Element element) {
         this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element);
     }
 
     @Override
-    public void note(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror) {
+    public void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
         this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror);
     }
 
     @Override
-    public void warn(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror) {
+    public void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
         this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror);
     }
 
     @Override
-    public void error(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror) {
+    public void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
         this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror);
     }
 
     @Override
-    public void note(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror, @Nonnull final AnnotationValue value) {
+    public void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
         this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror, value);
     }
 
     @Override
-    public void warn(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror, @Nonnull final AnnotationValue value) {
+    public void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
         this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror, value);
     }
 
     @Override
-    public void error(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror, @Nonnull final AnnotationValue value) {
+    public void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
         this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror, value);
     }
 

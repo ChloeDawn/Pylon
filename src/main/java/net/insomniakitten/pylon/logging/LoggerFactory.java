@@ -10,7 +10,7 @@ public final class LoggerFactory {
     }
 
     @Nonnull
-    public static PylonLogger newSimpleLogger(@Nonnull final String topic, @Nonnull final Supplier<Messager> messager) {
+    public static PylonLogger newSimpleLogger(final String topic, final Supplier<Messager> messager) {
         return new SimpleLogger(topic, messager);
     }
 }

@@ -19,8 +19,8 @@ public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
      * @throws IOException If the file cannot be written to
      * @since 0.3.0
      */
-    protected final void openJsonWriter(@Nonnull final String file, @Nonnull final IOConsumer<JsonWriter> consumer) throws IOException {
-        try (@Nonnull val jsonWriter = this.createJsonWriter(this.createFileAtRoot(file).openWriter())) {
+    protected final void openJsonWriter(final String file, final IOConsumer<JsonWriter> consumer) throws IOException {
+        try (val jsonWriter = this.createJsonWriter(this.createFileAtRoot(file).openWriter())) {
             consumer.accept(jsonWriter);
         }
     }
@@ -33,7 +33,7 @@ public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
      * @since 0.3.0
      */
     @Nonnull
-    private FileObject createFileAtRoot(@Nonnull final String file) throws IOException {
+    private FileObject createFileAtRoot(final String file) throws IOException {
         return this.getEnvironment().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", file);
     }
 
@@ -44,8 +44,8 @@ public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
      * @since 0.1.0
      */
     @Nonnull
-    private JsonWriter createJsonWriter(@Nonnull final Writer delegate) {
-        @Nonnull final BufferedWriter bufferedWriter;
+    private JsonWriter createJsonWriter(final Writer delegate) {
+        final BufferedWriter bufferedWriter;
 
         if (delegate instanceof BufferedWriter) {
             bufferedWriter = (BufferedWriter) delegate;
@@ -53,7 +53,7 @@ public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
             bufferedWriter = new BufferedWriter(delegate);
         }
 
-        @Nonnull val writer = new JsonWriter(bufferedWriter);
+        val writer = new JsonWriter(bufferedWriter);
 
         writer.setIndent("  ");
         writer.setHtmlSafe(true);

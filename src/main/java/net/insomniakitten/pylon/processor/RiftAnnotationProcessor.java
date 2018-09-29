@@ -8,7 +8,6 @@ import net.insomniakitten.pylon.Pylon;
 import net.insomniakitten.pylon.annotation.rift.Listener;
 import net.insomniakitten.pylon.annotation.rift.Mod;
 
-import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -26,17 +25,17 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
     }
 
     @Override
-    protected void getSupportedAnnotations(@Nonnull final ImmutableSet.Builder<String> builder) {
+    protected void getSupportedAnnotations(final ImmutableSet.Builder<String> builder) {
         builder.add("net.insomniakitten.pylon.annotation.rift.*");
     }
 
     @Override
-    protected boolean onProcessAnnotations(@Nonnull final RoundEnvironment environment) {
-        @Nonnull val modElements = this.collectDiscoveredMods(environment);
-        @Nonnull val listenerElements = this.collectDiscoveredListeners(environment);
+    protected boolean onProcessAnnotations(final RoundEnvironment environment) {
+        val modElements = this.collectDiscoveredMods(environment);
+        val listenerElements = this.collectDiscoveredListeners(environment);
 
         if (modElements.isEmpty() && !listenerElements.isEmpty()) {
-            this.getLogger().error("No @Mod annotation discovered in environment");
+            this.getLogger().warn("No @Mod annotation discovered in environment");
             return false;
         }
 
@@ -64,7 +63,7 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
                     json.name(Constants.LISTENERS);
                     json.beginArray();
 
-                    for (@Nonnull val entry : listenerElements.entrySet()) {
+                    for (val entry : listenerElements.entrySet()) {
                         this.appendListenerToWriter(entry, json);
                     }
 
@@ -73,14 +72,14 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
 
                 json.endObject();
             });
-        } catch (@Nonnull final IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
         return true;
     }
 
-    private Map<Element, Mod> collectDiscoveredMods(@Nonnull final RoundEnvironment environment) {
+    private Map<Element, Mod> collectDiscoveredMods(final RoundEnvironment environment) {
         return this.collectAnnotationsFor(environment, Mod.class, element -> {
             if (!(element instanceof TypeElement) && !(element instanceof PackageElement)) {
                 this.getLogger().error("@Mod applied to non-type/non-package element", element);
@@ -98,7 +97,7 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
         });
     }
 
-    private Map<Element, Listener> collectDiscoveredListeners(@Nonnull final RoundEnvironment environment) {
+    private Map<Element, Listener> collectDiscoveredListeners(final RoundEnvironment environment) {
         return this.collectAnnotationsFor(environment, Listener.class, element -> {
             if (!(element instanceof TypeElement)) {
                 this.getLogger().error("@Listener applied to non-type element", element);
@@ -120,9 +119,9 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
         }, Comparator.comparingInt(element -> element.getAnnotation(Listener.class).priority()));
     }
 
-    private void appendModToWriter(@Nonnull final Entry<Element, Mod> entry, @Nonnull final JsonWriter writer) throws IOException {
-        @Nonnull val element = entry.getKey();
-        @Nonnull val mod = entry.getValue();
+    private void appendModToWriter(final Entry<Element, Mod> entry, final JsonWriter writer) throws IOException {
+        val element = entry.getKey();
+        val mod = entry.getValue();
 
         if (mod.id().isEmpty()) {
             this.getLogger().error("Empty value 'id' in @Mod", element);
@@ -149,7 +148,7 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
         if (mod.authors().length > 0) {
             writer.name(Constants.AUTHORS);
             writer.beginArray();
-            for (@Nonnull val author : mod.authors()) {
+            for (val author : mod.authors()) {
                 if (author.isEmpty()) {
                     this.getLogger().error("Empty element in value 'authors' in @Mod", element);
                     continue;
@@ -160,13 +159,13 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
         }
     }
 
-    private void appendListenerToWriter(@Nonnull final Entry<Element, Listener> entry, @Nonnull final JsonWriter writer) throws IOException {
-        @Nonnull val element = (TypeElement) entry.getKey();
-        @Nonnull val listener = entry.getValue();
+    private void appendListenerToWriter(final Entry<Element, Listener> entry, final JsonWriter writer) throws IOException {
+        val element = (TypeElement) entry.getKey();
+        val listener = entry.getValue();
 
         writer.beginObject();
 
-        @Nonnull val name = this.getEnvironment().getElementUtils().getBinaryName(element);
+        val name = this.getEnvironment().getElementUtils().getBinaryName(element);
 
         writer.name(Constants.CLASS).value(name.toString());
         writer.name(Constants.SIDE).value(listener.side().getName());

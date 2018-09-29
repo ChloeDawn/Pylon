@@ -1,6 +1,5 @@
 package net.insomniakitten.pylon.logging;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -43,21 +42,21 @@ public interface PylonLogger {
      * @param message The message to print
      * @param element The element to provide a position hint for
      */
-    void note(@Nullable final CharSequence message, @Nonnull final Element element);
+    void note(@Nullable final CharSequence message, final Element element);
 
     /**
      * Prints a warning message with a position hint for the given element
      * @param message The message to print
      * @param element The element to provide a position hint for
      */
-    void warn(@Nullable final CharSequence message, @Nonnull final Element element);
+    void warn(@Nullable final CharSequence message, final Element element);
 
     /**
      * Prints an error message with a position hint for the given element
      * @param message The message to print
      * @param element The element to provide a position hint for
      */
-    void error(@Nullable final CharSequence message, @Nonnull final Element element);
+    void error(@Nullable final CharSequence message, final Element element);
 
     /**
      * Prints a note message with a position hint for the given annotation
@@ -65,7 +64,7 @@ public interface PylonLogger {
      * @param element The element containing the annotation
      * @param mirror The annotation to provide a position hint for
      */
-    void note(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror);
+    void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror);
 
     /**
      * Prints a warning message with a position hint for the given annotation
@@ -73,7 +72,7 @@ public interface PylonLogger {
      * @param element The element containing the annotation
      * @param mirror The annotation to provide a position hint for
      */
-    void warn(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror);
+    void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror);
 
     /**
      * Prints an error message with a position hint for the given annotation
@@ -81,7 +80,7 @@ public interface PylonLogger {
      * @param element The element containing the annotation
      * @param mirror The annotation to provide a position hint for
      */
-    void error(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror);
+    void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror);
 
     /**
      * Prints a note message with a position hint for the given annotation value
@@ -90,7 +89,7 @@ public interface PylonLogger {
      * @param mirror The annotation containing the value
      * @param value The value to provide a position hint for
      */
-    void note(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror, @Nonnull final AnnotationValue value);
+    void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value);
 
     /**
      * Prints a warning message with a position hint for the given annotation value
@@ -99,7 +98,7 @@ public interface PylonLogger {
      * @param mirror The annotation containing the value
      * @param value The value to provide a position hint for
      */
-    void warn(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror, @Nonnull final AnnotationValue value);
+    void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value);
 
     /**
      * Prints an error message with a position hint for the given annotation value
@@ -108,5 +107,5 @@ public interface PylonLogger {
      * @param mirror The annotation containing the value
      * @param value The value to provide a position hint for
      */
-    void error(@Nullable final CharSequence message, @Nonnull final Element element, @Nonnull final AnnotationMirror mirror, @Nonnull final AnnotationValue value);
+    void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value);
 }
