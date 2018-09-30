@@ -1,6 +1,8 @@
 package net.insomniakitten.pylon.logging;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -10,10 +12,15 @@ import java.util.function.Supplier;
  * Logging interface for printing messages with context on
  * the given elements, annotations, and their values
  * @author InsomniaKitten
- * @see LoggerFactory#newSimpleLogger(String, Supplier)
+ * @see PylonLogger#of(String, Supplier)
  * @since 0.3.0
  */
 public interface PylonLogger {
+    @Nonnull
+    static PylonLogger of(final String topic, final Supplier<Messager> messager) {
+        return new SimpleLogger(topic, messager);
+    }
+
     /**
      * The topic of this logger, used as an output prefix
      */

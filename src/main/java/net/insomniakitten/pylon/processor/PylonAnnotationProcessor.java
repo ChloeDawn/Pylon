@@ -2,7 +2,6 @@ package net.insomniakitten.pylon.processor;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import net.insomniakitten.pylon.logging.LoggerFactory;
 import net.insomniakitten.pylon.logging.PylonLogger;
 
 import javax.annotation.Nonnull;
@@ -26,7 +25,7 @@ import java.util.function.Predicate;
 public abstract class PylonAnnotationProcessor implements Processor {
     private final Set<String> supportedAnnotationTypes;
     private ProcessingEnvironment environment;
-    private final PylonLogger logger = LoggerFactory.newSimpleLogger(
+    private final PylonLogger logger = PylonLogger.of(
         this.getProcessorName(), () -> this.getEnvironment().getMessager()
     );
 
