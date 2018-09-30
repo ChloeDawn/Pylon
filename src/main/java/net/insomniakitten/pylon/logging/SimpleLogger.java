@@ -1,7 +1,5 @@
 package net.insomniakitten.pylon.logging;
 
-import lombok.Value;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Messager;
@@ -12,69 +10,78 @@ import javax.tools.Diagnostic;
 import java.text.MessageFormat;
 import java.util.function.Supplier;
 
-@Value
 final class SimpleLogger implements PylonLogger {
     private final String topic;
     private final Supplier<Messager> messager;
 
+    SimpleLogger(final String topic, final Supplier<Messager> messager) {
+        this.topic = topic;
+        this.messager = messager;
+    }
+
+    @Override
+    public String getTopic() {
+        return this.topic;
+    }
+
     @Override
     public void note(@Nullable final CharSequence message) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message));
+        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message));
     }
 
     @Override
     public void warn(@Nullable final CharSequence message) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message));
+        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message));
     }
 
     @Override
     public void error(@Nullable final CharSequence message) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message));
+        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message));
     }
 
     @Override
     public void note(@Nullable final CharSequence message, final Element element) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element);
+        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element);
     }
 
     @Override
     public void warn(@Nullable final CharSequence message, final Element element) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element);
+        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element);
     }
 
     @Override
     public void error(@Nullable final CharSequence message, final Element element) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element);
+        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element);
     }
 
     @Override
     public void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror);
+        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror);
     }
 
     @Override
     public void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror);
+        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror);
     }
 
     @Override
     public void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror);
+        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror);
     }
 
     @Override
     public void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror, value);
+        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror, value);
     }
 
     @Override
     public void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror, value);
+        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror, value);
     }
 
     @Override
     public void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
-        this.getMessager().get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror, value);
+        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror, value);
     }
 
     @Nonnull

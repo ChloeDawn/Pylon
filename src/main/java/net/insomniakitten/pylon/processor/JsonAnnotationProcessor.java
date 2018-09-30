@@ -1,7 +1,6 @@
 package net.insomniakitten.pylon.processor;
 
 import com.google.gson.stream.JsonWriter;
-import lombok.val;
 import net.insomniakitten.pylon.io.IOConsumer;
 
 import javax.annotation.Nonnull;
@@ -20,7 +19,7 @@ public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
      * @since 0.3.0
      */
     protected final void openJsonWriter(final String file, final IOConsumer<JsonWriter> consumer) throws IOException {
-        try (val jsonWriter = this.createJsonWriter(this.createFileAtRoot(file).openWriter())) {
+        try (final JsonWriter jsonWriter = this.createJsonWriter(this.createFileAtRoot(file).openWriter())) {
             consumer.accept(jsonWriter);
         }
     }
@@ -53,7 +52,7 @@ public abstract class JsonAnnotationProcessor extends PylonAnnotationProcessor {
             bufferedWriter = new BufferedWriter(delegate);
         }
 
-        val writer = new JsonWriter(bufferedWriter);
+        final JsonWriter writer = new JsonWriter(bufferedWriter);
 
         writer.setIndent("  ");
         writer.setHtmlSafe(true);

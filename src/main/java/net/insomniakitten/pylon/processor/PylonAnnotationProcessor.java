@@ -2,10 +2,6 @@ package net.insomniakitten.pylon.processor;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.val;
 import net.insomniakitten.pylon.logging.LoggerFactory;
 import net.insomniakitten.pylon.logging.PylonLogger;
 
@@ -27,17 +23,17 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@Getter
-@Setter(AccessLevel.PRIVATE)
 public abstract class PylonAnnotationProcessor implements Processor {
     private final Set<String> supportedAnnotationTypes;
     private ProcessingEnvironment environment;
-    private final PylonLogger logger = LoggerFactory.newSimpleLogger(this.getProcessorName(), () -> this.getEnvironment().getMessager());
+    private final PylonLogger logger = LoggerFactory.newSimpleLogger(
+        this.getProcessorName(), () -> this.getEnvironment().getMessager()
+    );
 
     private boolean initialized;
 
     {
-        val builder = new ImmutableSet.Builder<String>();
+        final ImmutableSet.Builder<String> builder = new ImmutableSet.Builder<>();
         this.getSupportedAnnotations(builder);
         this.supportedAnnotationTypes = builder.build();
     }
@@ -47,6 +43,31 @@ public abstract class PylonAnnotationProcessor implements Processor {
     protected abstract void getSupportedAnnotations(final ImmutableSet.Builder<String> builder);
 
     protected abstract boolean onProcessAnnotations(final RoundEnvironment environment);
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        return this.supportedAnnotationTypes;
+    }
+
+    public ProcessingEnvironment getEnvironment() {
+        return this.environment;
+    }
+
+    private void setEnvironment(final ProcessingEnvironment environment) {
+        this.environment = environment;
+    }
+
+    public PylonLogger getLogger() {
+        return this.logger;
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
+    }
+
+    private void setInitialized(final boolean initialized) {
+        this.initialized = initialized;
+    }
 
     @Override
     public Set<String> getSupportedOptions() {
