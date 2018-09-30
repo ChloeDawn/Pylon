@@ -46,7 +46,7 @@ public @interface Mod {
      * @deprecated Currently not implemented by Rift
      */
     @Deprecated
-    Side side() default Side.BOTH;
+    Side side() default Side.EITHER;
 
     /**
      * The authors of this Mod

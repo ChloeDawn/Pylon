@@ -16,9 +16,9 @@ import java.util.Locale;
  */
 public enum Side {
     /**
-     * Represents both physical sides
+     * Represents an ambiguity of both sides
      */
-    BOTH,
+    EITHER,
 
     /**
      * Represents the physical client side
@@ -31,12 +31,12 @@ public enum Side {
     SERVER;
 
     /**
-     * Determines if this Side represents both physical sides
-     * @return True if {@link Side#BOTH} equals this Side
+     * Determines if this Side represents either physical side
+     * @return True if {@link Side#EITHER} equals this Side
      * @since 0.1.0
      */
-    public boolean isBoth() {
-        return Side.BOTH == this;
+    public boolean isEither() {
+        return Side.EITHER == this;
     }
 
     /**
@@ -59,11 +59,11 @@ public enum Side {
 
     /**
      * Determines if this Side is equivalent to the given {@code side}
-     * @return True if {@link Side#BOTH} or {@code side} equals this Side
+     * @return True if {@link Side#EITHER} or {@code side} equals this Side
      * @since 0.1.0
      */
     public boolean isEquivalentTo(final Side side) {
-        return Side.BOTH == this || side == this;
+        return Side.EITHER == this || side == this;
     }
 
     /**

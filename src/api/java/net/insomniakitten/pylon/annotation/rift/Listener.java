@@ -32,5 +32,5 @@ public @interface Listener {
      * By default, it will be loaded on both physical sides
      * @since 0.1.0
      */
-    Side side() default Side.BOTH;
+    Side side() default Side.EITHER;
 }
