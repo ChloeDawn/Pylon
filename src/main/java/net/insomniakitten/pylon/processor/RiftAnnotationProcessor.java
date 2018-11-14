@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import net.insomniakitten.pylon.Pylon;
 import net.insomniakitten.pylon.annotation.rift.Listener;
 import net.insomniakitten.pylon.annotation.rift.Mod;
+import net.insomniakitten.pylon.ref.Side;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -172,10 +173,19 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
         final Name name = utils.getBinaryName(element);
 
         writer.name(Constants.CLASS).value(name.toString());
-        writer.name(Constants.SIDE).value(listener.side().getName());
+        writer.name(Constants.SIDE).value(this.getSideName(listener.side()));
         writer.name(Constants.PRIORITY).value(listener.priority());
 
         writer.endObject();
+    }
+
+    /**
+     * @param side The {@link Side} constant to be transformed
+     * @return The name of the side relative to Rift implementation
+     * @see <a href=https://git.io/fp3Wn>DimensionalDevelopment/Rift@2af4885</a>
+     */
+    private String getSideName(final Side side) {
+        return side.isEither() ? "both" : side.getName();
     }
 
     private static final class Constants {
