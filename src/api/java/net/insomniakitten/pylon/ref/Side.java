@@ -73,6 +73,7 @@ public enum Side {
      */
     @Nonnull
     public String getName() {
-        return this.name().toLowerCase(Locale.ROOT);
+        // hotfix for https://git.io/fp3Wn
+        return this.isEither() ? "both" : this.name().toLowerCase(Locale.ROOT);
     }
 }
