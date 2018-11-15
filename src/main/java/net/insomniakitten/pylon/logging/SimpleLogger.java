@@ -1,5 +1,7 @@
 package net.insomniakitten.pylon.logging;
 
+import com.google.common.base.Preconditions;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Messager;
@@ -12,11 +14,14 @@ import java.util.function.Supplier;
 
 final class SimpleLogger implements PylonLogger {
     private final String topic;
-    private final Supplier<Messager> messager;
+    private final Supplier<Messager> messagerSupplier;
 
-    SimpleLogger(final String topic, final Supplier<Messager> messager) {
+    @Nullable
+    private Messager messager;
+
+    SimpleLogger(final String topic, final Supplier<Messager> messagerSupplier) {
         this.topic = topic;
-        this.messager = messager;
+        this.messagerSupplier = messagerSupplier;
     }
 
     @Override
@@ -26,62 +31,67 @@ final class SimpleLogger implements PylonLogger {
 
     @Override
     public void note(@Nullable final CharSequence message) {
-        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message));
+        this.getMessager().printMessage(Diagnostic.Kind.NOTE, this.format(message));
     }
 
     @Override
     public void warn(@Nullable final CharSequence message) {
-        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message));
+        this.getMessager().printMessage(Diagnostic.Kind.WARNING, this.format(message));
     }
 
     @Override
     public void error(@Nullable final CharSequence message) {
-        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message));
+        this.getMessager().printMessage(Diagnostic.Kind.ERROR, this.format(message));
     }
 
     @Override
     public void note(@Nullable final CharSequence message, final Element element) {
-        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element);
+        this.getMessager().printMessage(Diagnostic.Kind.NOTE, this.format(message), element);
     }
 
     @Override
     public void warn(@Nullable final CharSequence message, final Element element) {
-        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element);
+        this.getMessager().printMessage(Diagnostic.Kind.WARNING, this.format(message), element);
     }
 
     @Override
     public void error(@Nullable final CharSequence message, final Element element) {
-        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element);
+        this.getMessager().printMessage(Diagnostic.Kind.ERROR, this.format(message), element);
     }
 
     @Override
     public void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
-        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror);
+        this.getMessager().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror);
     }
 
     @Override
     public void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
-        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror);
+        this.getMessager().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror);
     }
 
     @Override
     public void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror) {
-        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror);
+        this.getMessager().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror);
     }
 
     @Override
     public void note(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
-        this.messager.get().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror, value);
+        this.getMessager().printMessage(Diagnostic.Kind.NOTE, this.format(message), element, mirror, value);
     }
 
     @Override
     public void warn(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
-        this.messager.get().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror, value);
+        this.getMessager().printMessage(Diagnostic.Kind.WARNING, this.format(message), element, mirror, value);
     }
 
     @Override
     public void error(@Nullable final CharSequence message, final Element element, final AnnotationMirror mirror, final AnnotationValue value) {
-        this.messager.get().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror, value);
+        this.getMessager().printMessage(Diagnostic.Kind.ERROR, this.format(message), element, mirror, value);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SimpleLogger['%s', %s]", this.topic, this.messager);
     }
 
     @Nonnull
@@ -90,5 +100,12 @@ final class SimpleLogger implements PylonLogger {
             return MessageFormat.format("[{0}] null", this.getTopic());
         }
         return MessageFormat.format("[{0}] {1}", this.getTopic(), message);
+    }
+
+    private Messager getMessager() {
+        if (this.messager == null) {
+            this.messager = this.messagerSupplier.get();
+        }
+        return Preconditions.checkNotNull(this.messager);
     }
 }
