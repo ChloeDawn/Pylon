@@ -35,7 +35,17 @@ public enum Side {
      * @return True if {@link Side#EITHER} equals this Side
      * @since 0.1.0
      */
+    @Deprecated // use Side#isAmbiguous
     public final boolean isEither() {
+        return Side.EITHER == this;
+    }
+
+    /**
+     * Determines if this Side represents either physical side
+     * @return True if {@link Side#EITHER} equals this Side
+     * @since 0.3.2
+     */
+    public final boolean isAmbiguous() {
         return Side.EITHER == this;
     }
 

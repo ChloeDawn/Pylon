@@ -185,7 +185,7 @@ public final class RiftAnnotationProcessor extends JsonAnnotationProcessor {
      * @see <a href=https://git.io/fp3Wn>DimensionalDevelopment/Rift@2af4885</a>
      */
     private String getSideName(final Side side) {
-        return side.isEither() ? "both" : side.getName();
+        return side.isAmbiguous() ? "both" : side.getName();
     }
 
     private static final class Constants {
