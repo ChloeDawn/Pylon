@@ -35,7 +35,7 @@ public enum Side {
      * @return True if {@link Side#EITHER} equals this Side
      * @since 0.1.0
      */
-    public boolean isEither() {
+    public final boolean isEither() {
         return Side.EITHER == this;
     }
 
@@ -44,7 +44,7 @@ public enum Side {
      * @return True if {@link Side#CLIENT} equals this Side
      * @since 0.1.0
      */
-    public boolean isClient() {
+    public final boolean isClient() {
         return Side.CLIENT == this;
     }
 
@@ -53,7 +53,7 @@ public enum Side {
      * @return True if {@link Side#SERVER} equals this Side
      * @since 0.1.0
      */
-    public boolean isServer() {
+    public final boolean isServer() {
         return Side.SERVER == this;
     }
 
@@ -62,7 +62,7 @@ public enum Side {
      * @return True if {@link Side#EITHER} or {@code side} equals this Side
      * @since 0.1.0
      */
-    public boolean isEquivalentTo(final Side side) {
+    public final boolean isEquivalentTo(final Side side) {
         return Side.EITHER == this || side == this;
     }
 
@@ -72,7 +72,7 @@ public enum Side {
      * @since 0.1.0
      */
     @Nonnull
-    public String getName() {
+    public final String getName() {
         return this.name().toLowerCase(Locale.ROOT);
     }
 }
