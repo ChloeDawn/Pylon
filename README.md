@@ -1,7 +1,7 @@
 # Pylon [![](https://jitpack.io/v/InsomniaKitten/Pylon.svg)](https://jitpack.io/#InsomniaKitten/Pylon)
-##### Annotation processor for auto-generation of Rift mod metadata
+##### Compile-time annotation processor for auto-generation of mod metadata
 
-Pylon provides annotations for generating `riftmod.json` metadata dynamically from source.
+Pylon provides annotations for generating mod metadata resources dynamically from source.
 To use this processor in your environment, append the following to your Gradle build script:
 
 ```groovy
